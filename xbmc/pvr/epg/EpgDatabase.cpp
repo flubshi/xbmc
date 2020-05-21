@@ -958,7 +958,9 @@ bool CPVREpgDatabase::GetLastEpgScanTime(int iEpgId, CDateTime* lastScan)
   return bReturn;
 }
 
-bool CPVREpgDatabase::PersistLastEpgScanTime(int iEpgId, const CDateTime& lastScanTime, bool bQueueWrite /* = false */)
+bool CPVREpgDatabase::PersistLastEpgScanTime(int iEpgId,
+                                             const CDateTime& lastScanTime,
+                                             bool bQueueWrite)
 {
   CSingleLock lock(m_critSection);
   std::string strQuery = PrepareSQL("REPLACE INTO lastepgscan(idEpg, sLastScan) VALUES (%u, '%s');",
@@ -967,18 +969,20 @@ bool CPVREpgDatabase::PersistLastEpgScanTime(int iEpgId, const CDateTime& lastSc
   return bQueueWrite ? QueueInsertQuery(strQuery) : ExecuteQuery(strQuery);
 }
 
-int CPVREpgDatabase::Persist(const CPVREpg& epg, bool bQueueWrite /* = false */)
+int CPVREpgDatabase::Persist(const CPVREpg& epg, bool bQueueWrite)
 {
-  int iReturn(-1);
+  int iReturn = -1;
   std::string strQuery;
 
   CSingleLock lock(m_critSection);
   if (epg.EpgID() > 0)
     strQuery = PrepareSQL("REPLACE INTO epg (idEpg, sName, sScraperName) "
-        "VALUES (%u, '%s', '%s');", epg.EpgID(), epg.Name().c_str(), epg.ScraperName().c_str());
+                          "VALUES (%u, '%s', '%s');",
+                          epg.EpgID(), epg.Name().c_str(), epg.ScraperName().c_str());
   else
     strQuery = PrepareSQL("INSERT INTO epg (sName, sScraperName) "
-        "VALUES ('%s', '%s');", epg.Name().c_str(), epg.ScraperName().c_str());
+                          "VALUES ('%s', '%s');",
+                          epg.Name().c_str(), epg.ScraperName().c_str());
 
   if (bQueueWrite)
   {
@@ -988,7 +992,7 @@ int CPVREpgDatabase::Persist(const CPVREpg& epg, bool bQueueWrite /* = false */)
   else
   {
     if (ExecuteQuery(strQuery))
-      iReturn = epg.EpgID() <= 0 ? (int) m_pDS->lastinsertid() : epg.EpgID();
+      iReturn = epg.EpgID() <= 0 ? static_cast<int>(m_pDS->lastinsertid()) : epg.EpgID();
   }
 
   return iReturn;
@@ -1078,7 +1082,7 @@ int CPVREpgDatabase::Persist(const CPVREpgInfoTag& tag, bool bSingleUpdate /* = 
   if (bSingleUpdate)
   {
     if (ExecuteQuery(strQuery))
-      iReturn = (int) m_pDS->lastinsertid();
+      iReturn = static_cast<int>(m_pDS->lastinsertid());
   }
   else
   {

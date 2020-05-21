@@ -269,27 +269,53 @@ void CPVREpgContainer::LoadFromDB()
 
 bool CPVREpgContainer::PersistAll(unsigned int iMaxTimeslice) const
 {
+  const std::shared_ptr<CPVREpgDatabase> database = GetEpgDatabase();
+  if (!database)
+  {
+    CLog::LogF(LOGERROR, "No EPG database");
+    return false;
+  }
+
+  std::vector<std::shared_ptr<CPVREpg>> changedEpgs;
+  {
+    CSingleLock lock(m_critSection);
+    for (const auto& epg : m_epgIdToEpgMap)
+    {
+      if (epg.second && epg.second->NeedsSave())
+      {
+        // Note: We need to obtain a lock for every epg instance before we can lock
+        //       the epg db. This order is important. Otherwise deadlocks may occure.
+        epg.second->Lock();
+        changedEpgs.emplace_back(epg.second);
+      }
+    }
+  }
+
   bool bReturn = true;
 
-  m_critSection.lock();
-  const auto epgs = m_epgIdToEpgMap;
-  m_critSection.unlock();
-
-  const std::shared_ptr<CPVREpgDatabase> database = GetEpgDatabase();
-  XbmcThreads::EndTime processTimeslice(iMaxTimeslice);
-
-  for (const auto& epg : epgs)
+  if (!changedEpgs.empty())
   {
-    if (epg.second && epg.second->NeedsSave())
-    {
-      CLog::Log(LOGINFO, "EPG Container: Persisting events for channel '%s'...",
-                epg.second->GetChannelData()->ChannelName().c_str());
+    // Note: We must lock the db the whole time, otherwise races may occure.
+    database->Lock();
 
-      bReturn &= epg.second->Persist(database);
+    XbmcThreads::EndTime processTimeslice(iMaxTimeslice);
+    for (const auto& epg : changedEpgs)
+    {
+      if (!processTimeslice.IsTimePast())
+      {
+        CLog::Log(LOGDEBUG, "EPG Container: Persisting events for channel '%s'...",
+                  epg->GetChannelData()->ChannelName().c_str());
+
+        bReturn &= epg->Persist(database, true);
+      }
+
+      epg->Unlock();
     }
 
-    if (processTimeslice.IsTimePast())
-      break;
+    if (bReturn)
+      database->CommitInsertQueries();
+
+    database->Unlock();
   }
 
   return bReturn;

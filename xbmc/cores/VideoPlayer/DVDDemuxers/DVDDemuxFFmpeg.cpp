@@ -200,11 +200,12 @@ bool CDVDDemuxFFmpeg::Aborted()
   return false;
 }
 
-bool CDVDDemuxFFmpeg::Open(std::shared_ptr<CDVDInputStream> pInput, bool streaminfo, bool fileinfo)
+bool CDVDDemuxFFmpeg::Open(std::shared_ptr<CDVDInputStream> pInput, bool fileinfo)
 {
   AVInputFormat* iformat = NULL;
   std::string strFile;
-  m_streaminfo = streaminfo;
+  m_streaminfo = !pInput->IsRealtime() && !m_reopen;
+  m_reopen = false;
   m_currentPts = DVD_NOPTS_VALUE;
   m_speed = DVD_PLAYSPEED_NORMAL;
   m_program = UINT_MAX;
@@ -587,7 +588,7 @@ bool CDVDDemuxFFmpeg::Open(std::shared_ptr<CDVDInputStream> pInput, bool streami
           }
         }
       }
-      else if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls,applehttp") == 0)
+      else if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls") == 0)
       {
         nProgram = HLSSelectProgram();
       }
@@ -629,16 +630,10 @@ bool CDVDDemuxFFmpeg::Open(std::shared_ptr<CDVDInputStream> pInput, bool streami
     int64_t duration = m_pFormatContext->duration;
     std::shared_ptr<CDVDInputStream> pInputStream = m_pInput;
     Dispose();
+    m_reopen = true;
     if (!Open(pInputStream, false))
       return false;
     m_pFormatContext->duration = duration;
-  }
-
-  // seems to be a bug in ffmpeg, hls jumps back to start after a couple of seconds
-  // this cures the issue
-  if (m_pFormatContext->iformat && strcmp(m_pFormatContext->iformat->name, "hls,applehttp") == 0)
-  {
-    SeekTime(0);
   }
 
   return true;
@@ -678,7 +673,7 @@ bool CDVDDemuxFFmpeg::Reset()
 {
   std::shared_ptr<CDVDInputStream> pInputStream = m_pInput;
   Dispose();
-  return Open(pInputStream, m_streaminfo);
+  return Open(pInputStream, false);
 }
 
 void CDVDDemuxFFmpeg::Flush()

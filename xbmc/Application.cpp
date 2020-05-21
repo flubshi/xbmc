@@ -2679,14 +2679,18 @@ void CApplication::Stop(int exitCode)
 
 bool CApplication::PlayMedia(CFileItem& item, const std::string &player, int iPlaylist)
 {
-  //If item is a plugin, expand out
+  // If item is a plugin, expand out
   for (int i=0; URIUtils::IsPlugin(item.GetDynPath()) && i<5; ++i)
   {
     bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
 
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
+    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume) ||
+        item.GetDynPath() == item.GetPath()) // GetPluginResult resolved to an empty path
       return false;
   }
+  // if after the 5 resolution attempts the item is still a plugin just return, it isn't playable
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+    return false;
 
   if (item.IsSmartPlayList())
   {
@@ -2828,9 +2832,13 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   { // we modify the item so that it becomes a real URL
     bool resume = item.m_lStartOffset == STARTOFFSET_RESUME;
 
-    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume))
+    if (!XFILE::CPluginDirectory::GetPluginResult(item.GetDynPath(), item, resume) ||
+        item.GetDynPath() == item.GetPath()) // GetPluginResult resolved to an empty path
       return false;
   }
+  // if after the 5 resolution attempts the item is still a plugin just return, it isn't playable
+  if (URIUtils::IsPlugin(item.GetDynPath()))
+    return false;
 
 #ifdef HAS_UPNP
   if (URIUtils::IsUPnP(item.GetPath()))
@@ -4594,10 +4602,8 @@ void CApplication::SeekPercentage(float percent)
 // SwitchToFullScreen() returns true if a switch is made, else returns false
 bool CApplication::SwitchToFullScreen(bool force /* = false */)
 {
-  const int activeWindowID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-
   // don't switch if the slideshow is active
-  if (activeWindowID == WINDOW_SLIDESHOW)
+  if (CServiceBroker::GetGUI()->GetWindowManager().IsWindowActive(WINDOW_SLIDESHOW))
     return false;
 
   // if playing from the video info window, close it first!
@@ -4625,6 +4631,7 @@ bool CApplication::SwitchToFullScreen(bool force /* = false */)
       pDialog->Close(true);
   }
 
+  const int activeWindowID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
   int windowID = WINDOW_INVALID;
 
   // See if we're playing a game
