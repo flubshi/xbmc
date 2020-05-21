@@ -11,6 +11,7 @@
 
 #include "CallbackHandler.h"
 #include "PyContext.h"
+#include "ServiceBroker.h"
 #include "XBPython.h"
 #include "interfaces/legacy/AddonUtils.h"
 
@@ -159,7 +160,6 @@ namespace XBMCAddon
       return -1;
     }
 
-
     void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.RegisterPythonPlayerCallBack(player); }
     void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player) { XBMC_TRACE; g_pythonParser.UnregisterPythonPlayerCallBack(player); }
     void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor) { XBMC_TRACE; g_pythonParser.RegisterPythonMonitorCallBack(monitor); }
@@ -170,7 +170,7 @@ namespace XBMCAddon
     bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
     {
       XBMC_TRACE;
-      return g_pythonParser.WaitForEvent(hEvent,milliseconds);
+      return CServiceBroker::GetXBPython().WaitForEvent(hEvent, milliseconds);
     }
 
     void PythonLanguageHook::RegisterAddonClassInstance(AddonClass* obj)

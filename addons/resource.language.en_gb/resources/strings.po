@@ -1193,6 +1193,7 @@ msgstr ""
 
 #: xbmc/dialogs/GUIDialogFileBrowser.cpp
 #: xbmc/games/dialogs/GUIDialogSelectGameClient.cpp
+#: xbmc/network/NetworkServices.cpp
 #: xbmc/pvr/PVRGUIActions.cpp
 #: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
 #: xbmc/music/windows/GUIWindowMusicBase.cpp
@@ -4103,7 +4104,17 @@ msgctxt "#1051"
 msgid "Enter web address"
 msgstr ""
 
-#empty strings from id 1052 to 1179
+#: system/settings/settings.xml
+msgctxt "#1052"
+msgid "Require authentication"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#1053"
+msgid "Choose whether requests to the web server require a username and a password, which must be set below if enabled. It is recommended to always leave this setting enabled."
+msgstr ""
+
+#empty strings from id 1054 to 1179
 
 #: system/settings/settings.xml
 msgctxt "#1180"
@@ -6093,14 +6104,6 @@ msgstr ""
 #: xbmc/storage/MediaManager.cpp
 msgctxt "#13023"
 msgid "Successfully removed storage device"
-msgstr ""
-
-msgctxt "#13024"
-msgid "Joystick plugged"
-msgstr ""
-
-msgctxt "#13025"
-msgid "Joystick unplugged"
 msgstr ""
 
 #: system/settings/settings.xml
@@ -9752,6 +9755,7 @@ msgstr ""
 
 #. generic warning label used at several places
 #: xbmc/addons/AddonSystemSettings.cpp
+#: xbmc/network/NetworkServices.cpp
 #: xbmc/pvr/channels/PVRChannelGroupInternal.cpp
 #: xbmc/pvr/PVRManager.cpp
 msgctxt "#19098"
@@ -16756,7 +16760,12 @@ msgctxt "#33103"
 msgid "Remote communication server"
 msgstr ""
 
-#empty strings from id 33104 to 33199
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#33104"
+msgid "You have previously enabled the web interface without setting up a password. The web server has been disabled until you either explicitly allow this or set up authentication. Please review your settings."
+msgstr ""
+
+#empty strings from id 33105 to 33199
 
 #: xbmc/network/eventclient.cpp
 msgctxt "#33200"
@@ -17402,14 +17411,14 @@ msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#35100"
-msgid "Enable joystick and gamepad support"
+msgid "Enable controller support"
 msgstr ""
 
 #empty string with id 35101
 
 #: system/peripherals.xml
 msgctxt "#35102"
-msgid "Disable joystick when this device is present"
+msgid "Disable controllers when this device is present"
 msgstr ""
 
 #. Label for mouse buttons. Used in the controller mapping dialog.
@@ -19450,7 +19459,7 @@ msgstr ""
 #. Description of setting with label #263 "Allow remote control via HTTP"
 #: system/settings/settings.xml
 msgctxt "#36328"
-msgid "Enable remote users to control this application through the built-in web server."
+msgid "Enable remote users to control this application through the built-in web server. Never expose the web server port to the Internet."
 msgstr ""
 
 #. Description of setting with label #730 "Port"
@@ -19462,13 +19471,13 @@ msgstr ""
 #. Description of setting with label #1048 "Username"
 #: system/settings/settings.xml
 msgctxt "#36330"
-msgid "Define the web server username. This only takes effect when both the username and the password are set."
+msgid "Define the web server username. Must be set when authentication is enabled."
 msgstr ""
 
 #. Description of setting with label #1048 "Password"
 #: system/settings/settings.xml
 msgctxt "#36331"
-msgid "Define the web server password. This only takes effect when both the username and the password are set."
+msgid "Define the web server password. Must be set when authentication is enabled."
 msgstr ""
 
 #. Description of setting with label #199 "Web interface"
@@ -19486,7 +19495,7 @@ msgstr ""
 #. Description of setting with label #791 "Allow remote control from programs on this system"
 #: system/settings/settings.xml
 msgctxt "#36334"
-msgid "Allow programs on this device to control this application via the web interface or the JSON-RPC interface protocol."
+msgid "Allow programs on this device to control this application via the JSON-RPC over WebSocket, JSON-RPC over TCP, or EventServer protocol, without authentication."
 msgstr ""
 
 #. Description of setting with label #792 "Port"
@@ -19510,7 +19519,7 @@ msgstr ""
 #. Description of setting with label #794 "Allow remote control from programs on other systems"
 #: system/settings/settings.xml
 msgctxt "#36338"
-msgid "Allow programs on the network to control this application."
+msgid "Allow programs on the network to control this application via the JSON-RPC over WebSocket, JSON-RPC over TCP, or EventServer protocol, without authentication. It allows anyone with access to the network to completely control this application and, therefore, this device. Never expose these interfaces to the Internet."
 msgstr ""
 
 #. Description of setting with label #795 "Initial repeat delay (ms)"
@@ -19741,10 +19750,10 @@ msgctxt "#36377"
 msgid "Use a mouse or touch screen device to control the interface. Note: Disabling will cause you to lose control over this application when no keyboard or remote is present."
 msgstr ""
 
-#. Description of setting with label #35100 "Enable joystick and gamepad support"
+#. Description of setting with label #35100 "Enable controller support"
 #: system/settings/settings.xml
 msgctxt "#36378"
-msgid "Use a joystick to control the interface."
+msgid "Use a game controller to control the interface."
 msgstr ""
 
 #. Description of settings category with label #798 Internet access
@@ -20778,6 +20787,7 @@ msgctxt "#36631"
 msgid "Force weak SMBv1 security for compatibility with the USB sharing features on some WiFi routers and NAS devices."
 msgstr ""
 
+
 #: system/settings/settings.xml
 msgctxt "#36632"
 msgid "Import media items from UPnP servers"
@@ -20788,7 +20798,25 @@ msgctxt "#36633"
 msgid "Adds newly detected UPnP servers to the list of available media providers with the possibility to import media items into the local library. It is possible to choose which media items to import and which not. The imported items appear in the library like any other media item except that it can only be played if the UPnP server they were imported from is available."
 msgstr ""
 
-#empty strings from id 36634 to 36898
+#. Text in confirm dialog when disabling setting "Services -> Control -> Require authentication"
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36634"
+msgid "Anyone who has access to the web interface will be able to completely control this application and, therefore, this device, so it should be secured by a password. Are you sure you want to disable authentication?"
+msgstr ""
+
+#. Text in error dialog when trying to enter an invalid web server configuration
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36635"
+msgid "If web server authentication is enabled, a password must be entered as well."
+msgstr ""
+
+#. Text in error dialog when trying to enter an invalid web server configuration by enabling authentication without a password set
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36636"
+msgid "You must first enter a password before web server authentication can be enabled."
+msgstr ""
+
+#empty strings from id 36637 to 36898
 
 #. Description of setting with label #729 "Enable SSL"
 #: system/settings/settings.xml
