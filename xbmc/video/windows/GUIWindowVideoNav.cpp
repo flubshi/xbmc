@@ -11,10 +11,12 @@
 #include "Application.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
+#include "LibraryQueue.h"
 #include "PartyModeManager.h"
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "dialogs/GUIDialogMediaSource.h"
+#include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "filesystem/MultiPathDirectory.h"
@@ -41,9 +43,9 @@
 #include "utils/Variant.h"
 #include "utils/log.h"
 #include "video/VideoInfoScanner.h"
-#include "video/VideoLibraryQueue.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "view/GUIViewState.h"
+#include "media/import/MediaImportManager.h"
 
 #include <utility>
 
@@ -86,7 +88,8 @@ bool CGUIWindowVideoNav::OnAction(const CAction &action)
 
     if (pItem && pItem->HasVideoInfoTag())
     {
-      CVideoLibraryQueue::GetInstance().MarkAsWatched(pItem, pItem->GetVideoInfoTag()->GetPlayCount() == 0);
+      CLibraryQueue::GetInstance().MarkAsWatched(pItem,
+                                                 pItem->GetVideoInfoTag()->GetPlayCount() == 0);
       return true;
     }
   }
@@ -951,7 +954,7 @@ void CGUIWindowVideoNav::GetContextButtons(int itemNumber, CContextButtons &butt
         {
           buttons.Add(CONTEXT_BUTTON_EDIT, 16106);
         }
-        if (node == NODE_TYPE_TITLE_TVSHOWS)
+        if (node == NODE_TYPE_TITLE_TVSHOWS && !item->IsImported())
         {
           buttons.Add(CONTEXT_BUTTON_SCAN, 13349);
         }
@@ -1091,7 +1094,17 @@ bool CGUIWindowVideoNav::OnAddMediaSource()
 bool CGUIWindowVideoNav::OnClick(int iItem, const std::string &player)
 {
   CFileItemPtr item = m_vecItems->Get(iItem);
-  if (!item->m_bIsFolder && item->IsVideoDb() && !item->Exists())
+  if (!item->m_bIsFolder && item->IsImported() && !CServiceBroker::GetMediaImportManager().IsSourceActive(item->GetSource()))
+  {
+    CMediaImportSource source(item->GetSource());
+    if (CServiceBroker::GetMediaImportManager().GetSource(source.GetIdentifier(), source))
+      KODI::MESSAGING::HELPERS::ShowOKDialogText("Media provider unavailable" /* TODO */, "The media provider " + source.GetFriendlyName() + " is currently not available." /* TODO */);
+    else
+      KODI::MESSAGING::HELPERS::ShowOKDialogText("Media provider unavailable" /* TODO */, "The media provider is currently not available." /* TODO */);
+
+    return true;
+  }
+  else if (!item->m_bIsFolder && item->IsVideoDb() && !item->Exists())
   {
     CLog::Log(LOGDEBUG, "%s called on '%s' but file doesn't exist", __FUNCTION__, item->GetPath().c_str());
 

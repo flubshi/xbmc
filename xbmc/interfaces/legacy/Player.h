@@ -461,6 +461,21 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Player
+      /// @brief \python_func{ getPlayingItem() }
+      ///-----------------------------------------------------------------------
+      /// Returns the current playing item.
+      ///
+      /// @return                    Playing item
+      /// @throws Exception          If player is not playing a file.
+      ///
+      getPlayingItem();
+#else
+      XBMCAddon::xbmcgui::ListItem* getPlayingItem();
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_Player
       /// @brief \python_func{ getTime() }
       /// Get playing time.
       ///
@@ -491,6 +506,24 @@ namespace XBMCAddon
       seekTime(...);
 #else
       void seekTime(double seekTime);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_Player
+      /// @brief \python_func{ addSubtitle(subtitleFile, name, language, activate) }
+      ///-----------------------------------------------------------------------
+      /// Add subtitle file with name and language and optionally activate it.
+      ///
+      /// @param subtitleFile        File to use as source ofsubtitles
+      /// @param name                Name of the subtitle to display
+      /// @param language            Language of the subtitlte to use
+      /// @param activate            Whether or not to activate the subtitle
+      ///
+      addSubtitle(...);
+#else
+      void addSubtitle(const char* subtitleFile, const char* name, const char* language,
+        bool activate = true);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS

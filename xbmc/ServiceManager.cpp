@@ -12,6 +12,7 @@
 #include "DatabaseManager.h"
 #include "PlayListPlayer.h"
 #include "addons/BinaryAddonCache.h"
+#include "addons/MediaImporter.h"
 #include "addons/RepositoryUpdater.h"
 #include "addons/VFSEntry.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
@@ -24,6 +25,7 @@
 #include "input/InputManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
+#include "media/import/MediaImportManager.h"
 #include "network/Network.h"
 #include "peripherals/Peripherals.h"
 #include "powermanagement/PowerManager.h"
@@ -139,6 +141,9 @@ bool CServiceManager::InitStageTwo(const CAppParamParser &params, const std::str
 
   m_fileExtensionProvider.reset(new CFileExtensionProvider(*m_addonMgr));
 
+  m_mediaImportManager.reset(new CMediaImportManager());
+  m_mediaImportAddons.reset(new ADDON::CMediaImportAddonManager(*m_addonMgr));
+
   m_powerManager.reset(new CPowerManager());
   m_powerManager->Initialize();
   m_powerManager->SetDefaults();
@@ -170,6 +175,9 @@ bool CServiceManager::InitStageThree(const std::shared_ptr<CProfileManager>& pro
     m_PVRManager->Init();
 
   m_playerCoreFactory.reset(new CPlayerCoreFactory(*profileManager));
+
+  m_mediaImportManager->Initialize();
+  m_mediaImportAddons->Start();
 
   init_level = 3;
   return true;
@@ -212,6 +220,8 @@ void CServiceManager::DeinitStageTwo()
 
   m_mediaManager->Stop();
   m_mediaManager.reset();
+  m_mediaImportAddons.reset();
+  m_mediaImportManager.reset();
 }
 
 void CServiceManager::DeinitStageOne()
@@ -256,6 +266,11 @@ ADDON::CRepositoryUpdater &CServiceManager::GetRepositoryUpdater()
   return *m_repositoryUpdater;
 }
 
+ADDON::CMediaImportAddonManager &CServiceManager::GetMediaImportAddons()
+{
+  return *m_mediaImportAddons;
+}
+
 #ifdef HAS_PYTHON
 XBPython& CServiceManager::GetXBPython()
 {
@@ -286,6 +301,11 @@ CPlatform& CServiceManager::GetPlatform()
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+CMediaImportManager& CServiceManager::GetMediaImportManager()
+{
+  return *m_mediaImportManager;
 }
 
 GAME::CControllerManager& CServiceManager::GetGameControllerManager()
