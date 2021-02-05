@@ -185,11 +185,11 @@ std::shared_ptr<CSettingSection> CGUIDialogMediaImportInfo::GetSection()
   return nullptr;
 }
 
-void CGUIDialogMediaImportInfo::Save()
+bool CGUIDialogMediaImportInfo::Save()
 {
+  bool success = false;
   if (m_import != nullptr)
   {
-    bool success = false;
     if (m_importer->UnloadImportSettings(*m_import))
       success = CServiceBroker::GetMediaImportManager().UpdateImport(*m_import);
 
@@ -209,6 +209,7 @@ void CGUIDialogMediaImportInfo::Save()
     else
       m_logger->error("failed to save settings for source {}", *m_source);
   }
+  return success;
 }
 
 CSettingsManager* CGUIDialogMediaImportInfo::GetSettingsManager() const
