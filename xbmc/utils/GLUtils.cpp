@@ -49,6 +49,14 @@ std::map<GLenum, const char*> glErrorSource = {
     X(GL_DEBUG_SOURCE_APPLICATION_KHR),
     X(GL_DEBUG_SOURCE_OTHER_KHR),
 #endif
+#if defined(HAS_GL) && defined(TARGET_LINUX)
+    X(GL_DEBUG_SOURCE_API),
+    X(GL_DEBUG_SOURCE_WINDOW_SYSTEM),
+    X(GL_DEBUG_SOURCE_SHADER_COMPILER),
+    X(GL_DEBUG_SOURCE_THIRD_PARTY),
+    X(GL_DEBUG_SOURCE_APPLICATION),
+    X(GL_DEBUG_SOURCE_OTHER),
+#endif
 };
 
 std::map<GLenum, const char*> glErrorType = {
@@ -61,6 +69,15 @@ std::map<GLenum, const char*> glErrorType = {
     X(GL_DEBUG_TYPE_OTHER_KHR),
     X(GL_DEBUG_TYPE_MARKER_KHR),
 #endif
+#if defined(HAS_GL) && defined(TARGET_LINUX)
+    X(GL_DEBUG_TYPE_ERROR),
+    X(GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR),
+    X(GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR),
+    X(GL_DEBUG_TYPE_PORTABILITY),
+    X(GL_DEBUG_TYPE_PERFORMANCE),
+    X(GL_DEBUG_TYPE_OTHER),
+    X(GL_DEBUG_TYPE_MARKER),
+#endif
 };
 
 std::map<GLenum, const char*> glErrorSeverity = {
@@ -69,6 +86,12 @@ std::map<GLenum, const char*> glErrorSeverity = {
     X(GL_DEBUG_SEVERITY_MEDIUM_KHR),
     X(GL_DEBUG_SEVERITY_LOW_KHR),
     X(GL_DEBUG_SEVERITY_NOTIFICATION_KHR),
+#endif
+#if defined(HAS_GL) && defined(TARGET_LINUX)
+    X(GL_DEBUG_SEVERITY_HIGH),
+    X(GL_DEBUG_SEVERITY_MEDIUM),
+    X(GL_DEBUG_SEVERITY_LOW),
+    X(GL_DEBUG_SEVERITY_NOTIFICATION),
 #endif
 };
 #undef X
