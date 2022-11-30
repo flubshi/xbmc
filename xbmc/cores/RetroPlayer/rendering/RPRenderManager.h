@@ -117,6 +117,8 @@ public:
 
   void SaveThumbnail(const std::string& path);
 
+  void DestroyContext();
+
 private:
   /*!
    * \brief Get or create a renderer compatible with the given render settings

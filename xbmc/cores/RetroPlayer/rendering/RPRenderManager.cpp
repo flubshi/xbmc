@@ -786,3 +786,14 @@ void CRPRenderManager::SaveThumbnail(const std::string& path)
                                          path);
   }
 }
+
+void CRPRenderManager::DestroyContext()
+{
+  for (IRenderBufferPool* bufferPool : m_processInfo.GetBufferManager().GetBufferPools())
+  {
+    if (!bufferPool->HasVisibleRenderer())
+      continue;
+
+    bufferPool->DestroyContext();
+  }
+}

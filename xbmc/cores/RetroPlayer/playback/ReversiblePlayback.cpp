@@ -248,6 +248,11 @@ void CReversiblePlayback::RewindEvent()
   m_gameClient->RunFrame();
 }
 
+void CReversiblePlayback::EndEvent()
+{
+  m_renderManager.DestroyContext();
+}
+
 void CReversiblePlayback::AddFrame()
 {
   std::unique_lock<CCriticalSection> lock(m_mutex);
