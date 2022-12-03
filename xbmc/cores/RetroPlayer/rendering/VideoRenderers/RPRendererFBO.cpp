@@ -209,6 +209,10 @@ void CRPRendererFBO::DrawBlackBars()
     count += 6;
   }
 
+  GLuint vao;
+  KODI::UTILS::GL::glGenVertexArrays(1, &vao);
+  KODI::UTILS::GL::glBindVertexArray(vao);
+
   GLuint vertexVBO;
   glGenBuffers(1, &vertexVBO);
   glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
@@ -222,6 +226,9 @@ void CRPRendererFBO::DrawBlackBars()
   glDisableVertexAttribArray(posLoc);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &vertexVBO);
+
+  KODI::UTILS::GL::glBindVertexArray(0);
+  KODI::UTILS::GL::glDeleteVertexArrays(1, &vao);
 
   m_context.DisableGUIShader();
 }
@@ -301,6 +308,10 @@ void CRPRendererFBO::Render(uint8_t alpha)
   vertex[1].u1 = vertex[2].u1 = rect.x2;
   vertex[2].v1 = vertex[3].v1 = rect.y2;
 
+  GLuint vao;
+  KODI::UTILS::GL::glGenVertexArrays(1, &vao);
+  KODI::UTILS::GL::glBindVertexArray(vao);
+
   GLuint vertexVBO;
   glGenBuffers(1, &vertexVBO);
   glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
@@ -331,6 +342,9 @@ void CRPRendererFBO::Render(uint8_t alpha)
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glDeleteBuffers(1, &indexVBO);
+
+  KODI::UTILS::GL::glBindVertexArray(0);
+  KODI::UTILS::GL::glDeleteVertexArrays(1, &vao);
 
   m_context.DisableGUIShader();
 
