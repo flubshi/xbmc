@@ -127,6 +127,9 @@ CLinuxRendererGL::CLinuxRendererGL()
   m_cmsOn = false;
 
   m_renderSystem = dynamic_cast<CRenderSystemGL*>(CServiceBroker::GetRenderSystem());
+
+  KODI::UTILS::GL::glGenVertexArrays(1, &m_vao);
+  KODI::UTILS::GL::glGenVertexArrays(1, &m_vaoBlackBars);
 }
 
 CLinuxRendererGL::~CLinuxRendererGL()
@@ -144,6 +147,9 @@ CLinuxRendererGL::~CLinuxRendererGL()
     delete m_pVideoFilterShader;
     m_pVideoFilterShader = nullptr;
   }
+
+  KODI::UTILS::GL::glDeleteVertexArrays(1, &m_vao);
+  KODI::UTILS::GL::glDeleteVertexArrays(1, &m_vaoBlackBars);
 }
 
 bool CLinuxRendererGL::ValidateRenderer()
@@ -503,6 +509,8 @@ void CLinuxRendererGL::RenderUpdate(int index, int index2, bool clear, unsigned 
   if (m_pVideoFilterShader)
     m_pVideoFilterShader->SetAlpha(alpha/255);
 
+  KODI::UTILS::GL::glBindVertexArray(m_vao);
+
   if (!Render(flags, m_iYV12RenderBuffer) && clear)
     ClearBackBuffer();
 
@@ -519,6 +527,8 @@ void CLinuxRendererGL::RenderUpdate(int index, int index2, bool clear, unsigned 
 
     Render(flags, m_iYV12RenderBuffer);
   }
+
+  KODI::UTILS::GL::glBindVertexArray(0);
 
   VerifyGLState();
   glEnable(GL_BLEND);
@@ -537,6 +547,8 @@ void CLinuxRendererGL::ClearBackBuffer()
 //since it only sets pixels to black that aren't going to be overwritten by the video
 void CLinuxRendererGL::DrawBlackBars()
 {
+  KODI::UTILS::GL::glBindVertexArray(m_vaoBlackBars);
+
   glDisable(GL_BLEND);
 
   struct Svertex
@@ -655,6 +667,8 @@ void CLinuxRendererGL::DrawBlackBars()
   glDeleteBuffers(1, &vertexVBO);
 
   m_renderSystem->DisableShader();
+
+  KODI::UTILS::GL::glBindVertexArray(0);
 }
 
 void CLinuxRendererGL::UpdateVideoFilter()

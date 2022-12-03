@@ -45,6 +45,7 @@ CGUIFontTTF* CGUIFontTTF::CreateGUIFontTTF(const std::string& fontIdent)
 
 CGUIFontTTFGL::CGUIFontTTFGL(const std::string& fontIdent) : CGUIFontTTF(fontIdent)
 {
+  KODI::UTILS::GL::glGenVertexArrays(1, &m_vao);
 }
 
 CGUIFontTTFGL::~CGUIFontTTFGL(void)
@@ -54,11 +55,15 @@ CGUIFontTTFGL::~CGUIFontTTFGL(void)
   // our virtual methods won't be accessible after this point
   m_dynamicCache.Flush();
   DeleteHardwareTexture();
+
+  KODI::UTILS::GL::glDeleteVertexArrays(1, &m_vao);
 }
 
 bool CGUIFontTTFGL::FirstBegin()
 {
 #if defined(HAS_GL)
+  KODI::UTILS::GL::glBindVertexArray(m_vao);
+
   GLenum pixformat = GL_RED;
   GLenum internalFormat;
   unsigned int major, minor;
@@ -69,6 +74,7 @@ bool CGUIFontTTFGL::FirstBegin()
   else
     internalFormat = GL_LUMINANCE;
   renderSystem->EnableShader(ShaderMethodGL::SM_FONTS);
+
 #else
   CRenderSystemGLES* renderSystem =
       dynamic_cast<CRenderSystemGLES*>(CServiceBroker::GetRenderSystem());
@@ -124,6 +130,8 @@ bool CGUIFontTTFGL::FirstBegin()
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_nTexture);
 
+  KODI::UTILS::GL::glBindVertexArray(0);
+
   return true;
 }
 
@@ -140,6 +148,8 @@ void CGUIFontTTFGL::LastEnd()
   GLint colLoc = renderSystem->ShaderGetCol();
   GLint tex0Loc = renderSystem->ShaderGetCoord0();
   GLint modelLoc = renderSystem->ShaderGetModel();
+
+  KODI::UTILS::GL::glBindVertexArray(m_vao);
 
   CreateStaticVertexBuffers();
 
@@ -313,6 +323,8 @@ void CGUIFontTTFGL::LastEnd()
 
 #ifdef HAS_GL
   renderSystem->DisableShader();
+
+  KODI::UTILS::GL::glBindVertexArray(0);
 #else
   renderSystem->DisableGUIShader();
 #endif
