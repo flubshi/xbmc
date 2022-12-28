@@ -275,6 +275,9 @@ bool CGameClient::OpenStandalone(RETRO::IStreamManager& streamManager, IGameInpu
 
   GAME_ERROR error = GAME_ERROR_FAILED;
 
+  // Loading the game might require the stream subsystem to be initialized
+  Streams().Initialize(streamManager);
+
   try
   {
     LogError(error = m_ifc.game->toAddon->LoadStandalone(m_ifc.game), "LoadStandalone()");
@@ -287,11 +290,13 @@ bool CGameClient::OpenStandalone(RETRO::IStreamManager& streamManager, IGameInpu
   if (error != GAME_ERROR_NO_ERROR)
   {
     NotifyError(error);
+    Streams().Deinitialize();
     return false;
   }
 
   if (!InitializeGameplay("", streamManager, input))
   {
+    Streams().Deinitialize();
     return false;
   }
 
