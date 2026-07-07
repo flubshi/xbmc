@@ -1004,3 +1004,9 @@ msgstr ""
 msgctxt "#31615"
 msgid "Subtitle language"
 msgstr ""
+
+#: /xml/SkinSettings.xml
+#. Setting to always show the clock in the top-right corner during playback, independent of the OSD
+msgctxt "#31616"
+msgid "Always show clock during playback"
+msgstr ""

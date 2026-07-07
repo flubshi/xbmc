@@ -2,7 +2,7 @@
 <window type="dialog" id="1109">
 	<onload>Skin.TimerStart(1109_topbaroverlay)</onload>
 	<visible>Window.IsActive(fullscreenvideo) | Window.IsActive(visualisation)</visible>
-	<visible>Window.IsActive(seekbar) | Window.IsActive(pvrosdchannels) | Window.IsActive(pvrchannelguide)</visible>
+	<visible>Window.IsActive(seekbar) | Window.IsActive(pvrosdchannels) | Window.IsActive(pvrchannelguide) | Skin.HasSetting(clock_always_visible)</visible>
 	<depth>DepthOSD</depth>
 	<include>Animation_TopSlide</include>
 	<zorder>0</zorder>
@@ -285,6 +285,26 @@
 						<visible>Player.Muted</visible>
 					</control>
 				</control>
+			</control>
+		</control>
+		<control type="group">
+			<visible>Skin.HasSetting(clock_always_visible) + ![Player.ShowInfo | Window.IsActive(fullscreeninfo) | Player.ShowTime | Window.IsActive(videoosd) | Window.IsActive(musicosd) | Window.IsActive(playerprocessinfo) | Window.IsActive(pvrosdchannels) | Window.IsActive(pvrchannelguide) + ![Player.Seeking | Player.HasPerformedSeek(3) | Player.Forwarding | Player.Rewinding | Player.Paused] | !String.IsEmpty(PVR.ChannelNumberInput)]</visible>
+			<control type="image">
+				<right>0</right>
+				<top>0</top>
+				<width>320</width>
+				<height>120</height>
+				<texture colordiffuse="D0000000">frame/osdfade.png</texture>
+			</control>
+			<control type="label">
+				<font>font_clock</font>
+				<shadowcolor>text_shadow</shadowcolor>
+				<top>0</top>
+				<right>20</right>
+				<height>200</height>
+				<width>600</width>
+				<align>right</align>
+				<label>$INFO[System.Time]</label>
 			</control>
 		</control>
 	</controls>
